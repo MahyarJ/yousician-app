@@ -1,23 +1,16 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import styles from './App.module.sass';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <div className={styles.headerContainer}>
+          <h1>New Songs Delivered Every Week</h1>
+          <p>
+            Here are the most recent additions to the Yousician App. Start playing today!
+          </p>
+        </div>
       </header>
     </div>
   );
