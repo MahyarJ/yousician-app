@@ -6,13 +6,33 @@ import axios from 'axios';
 
 const url = 'http://localhost:3004/songs?_start=0&_end=50';
 
-const handleSearchSongs = (value) => {
-  console.log(value);
-};
-
 const App = () => {
-  const [data, setdata] = useState([]);
+  const [data, setdata] = useState(null);
   const [error, seterror] = useState(null);
+
+  const handleSearchSongs = (value) => {
+    setdata(null);
+    const params = {
+      _start: 0,
+      _end: 50,
+      search_like: encodeURI(value),
+    };
+
+    axios
+      .get(url, { params })
+      .then((response) => {
+        setdata(response.data);
+      })
+      .catch((error) => {
+        // handle error
+        seterror(error);
+        console.log(error);
+      })
+      .then(() => {
+        // always executed
+      });
+  };
+
   useEffect(() => {
     axios
       .get(url)
@@ -29,7 +49,6 @@ const App = () => {
       });
   }, []);
 
-  console.log(data);
   return (
     <div className={styles.container}>
       <header className={styles.header}>
