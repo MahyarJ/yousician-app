@@ -3,15 +3,33 @@ import styles from './App.module.sass';
 import Searchbar from './components/Searchbar';
 import Song from './components/Song';
 import axios from 'axios';
-
-const url = 'http://localhost:3004/songs?_start=0&_end=50';
+import { find } from 'lodash';
 
 const App = () => {
   const [data, setdata] = useState(null);
+  const [favorites, setfavorites] = useState([]);
   const [error, seterror] = useState(null);
+
+  const getFavorites = () => {
+    const favoritesUrl = 'http://localhost:3004/favorites';
+    axios
+      .get(favoritesUrl)
+      .then((response) => {
+        setfavorites(response.data);
+      })
+      .catch((error) => {
+        // handle error
+        seterror(error);
+        console.log(error);
+      })
+      .then(() => {
+        // always executed
+      });
+  };
 
   const handleSearchSongs = (value) => {
     setdata(null);
+    const url = 'http://localhost:3004/songs?_start=0&_end=50';
     const params = {
       _start: 0,
       _end: 50,
@@ -33,9 +51,47 @@ const App = () => {
       });
   };
 
+  const handleToggleFavorite = (songId, favoriteId) => {
+    const url = 'http://localhost:3004/favorites';
+    if (!favoriteId) {
+      axios
+        .post(url, { songId })
+        .then((response) => {
+          getFavorites();
+          // setdata(response.data);
+          console.log(response);
+        })
+        .catch((error) => {
+          // handle error
+          // seterror(error);
+          console.log(error);
+        })
+        .then(() => {
+          // always executed
+        });
+    } else {
+      axios
+        .delete(url + '/' + favoriteId)
+        .then((response) => {
+          // setdata(response.data);
+          getFavorites();
+          console.log(response);
+        })
+        .catch((error) => {
+          // handle error
+          // seterror(error);
+          console.log(error);
+        })
+        .then(() => {
+          // always executed
+        });
+    }
+  };
+
   useEffect(() => {
+    const songsUrl = 'http://localhost:3004/songs?_start=0&_end=50';
     axios
-      .get(url)
+      .get(songsUrl)
       .then((response) => {
         setdata(response.data);
       })
@@ -47,6 +103,8 @@ const App = () => {
       .then(() => {
         // always executed
       });
+
+    getFavorites();
   }, []);
 
   return (
@@ -70,15 +128,18 @@ const App = () => {
           ) : !data ? (
             <div>loading...</div>
           ) : (
-            data.map(({ title, images, artist, level }, index) => {
+            data.map((song, index) => {
+              const record = find(favorites, (fav) => {
+                return fav.songId === song.id;
+              });
+
               return (
                 <Song
-                  key={index}
-                  title={title}
-                  level={level}
-                  image={images}
-                  artist={artist}
+                  key={song.id}
+                  song={song}
+                  favoriteId={record ? record.id : null}
                   isDark={index % 2}
+                  toggleFavorite={handleToggleFavorite}
                 />
               );
             })
