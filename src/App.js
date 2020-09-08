@@ -69,6 +69,10 @@ const App = () => {
   const handleToggleFavorite = (songId, favoriteId) => {
     const url = `${process.env.REACT_APP_API_URL}/favorites`;
     if (!favoriteId) {
+      // Handle optimistic UI - Append
+      const newFavorites = favorites.concat({ id: 'tempId', songId });
+      setfavorites(newFavorites);
+      // Call real end-point
       axios
         .post(url, { songId })
         .then((response) => {
@@ -87,6 +91,10 @@ const App = () => {
           // always executed
         });
     } else {
+      // Handle optimistic UI - Remove
+      const newFavorites = favorites.filter((fav) => fav.id !== favoriteId);
+      setfavorites(newFavorites);
+      // Call real end-point
       axios
         .delete(url + '/' + favoriteId)
         .then((response) => {
