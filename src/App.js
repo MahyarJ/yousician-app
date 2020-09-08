@@ -5,10 +5,22 @@ import Song from './components/Song';
 import axios from 'axios';
 import { find } from 'lodash';
 
+const pageSize = 20;
+
 const App = () => {
-  const [data, setdata] = useState(null);
+  const [data, setdata] = useState([]);
+  const [hasMore, sethasMore] = useState(true);
+  const [isLoading, setisLoading] = useState(true);
   const [favorites, setfavorites] = useState([]);
-  const [error, seterror] = useState(null);
+  const [start, setstart] = useState(0);
+
+  const listenToScroll = () => {
+    const winScroll = document.documentElement.scrollTop;
+    const height =
+      document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const position = Math.round((winScroll / height) * 100);
+    if (position > 90) setisLoading(true);
+  };
 
   const getFavorites = () => {
     const favoritesUrl = 'http://localhost:3004/favorites';
@@ -18,8 +30,6 @@ const App = () => {
         setfavorites(response.data);
       })
       .catch((error) => {
-        // handle error
-        seterror(error);
         console.log(error);
       })
       .then(() => {
@@ -27,9 +37,30 @@ const App = () => {
       });
   };
 
+  const getNextPage = () => {
+    if (!isLoading || !hasMore) return;
+    const songsUrl = `http://localhost:3004/songs?_start=${start}&_limit=${pageSize}`;
+    console.log(songsUrl);
+    axios
+      .get(songsUrl)
+      .then((response) => {
+        setisLoading(false);
+        setstart(start + pageSize);
+        if (response.data.length < pageSize) {
+          console.log('no more');
+          sethasMore(false);
+        }
+        setdata(data.concat(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+        setisLoading(false);
+      });
+  };
+
   const handleSearchSongs = (value) => {
     setdata(null);
-    const url = 'http://localhost:3004/songs?_start=0&_end=50';
+    const url = 'http://localhost:3004/songs';
     const params = {
       _start: 0,
       _end: 50,
@@ -42,8 +73,6 @@ const App = () => {
         setdata(response.data);
       })
       .catch((error) => {
-        // handle error
-        seterror(error);
         console.log(error);
       })
       .then(() => {
@@ -78,8 +107,6 @@ const App = () => {
           console.log(response);
         })
         .catch((error) => {
-          // handle error
-          // seterror(error);
           console.log(error);
         })
         .then(() => {
@@ -89,21 +116,17 @@ const App = () => {
   };
 
   useEffect(() => {
-    const songsUrl = 'http://localhost:3004/songs?_start=0&_end=50';
-    axios
-      .get(songsUrl)
-      .then((response) => {
-        setdata(response.data);
-      })
-      .catch((error) => {
-        // handle error
-        seterror(error);
-        console.log(error);
-      })
-      .then(() => {
-        // always executed
-      });
+    window.addEventListener('scroll', listenToScroll);
+    return () => {
+      window.removeEventListener('scroll', () => {});
+    };
+  }, []);
 
+  useEffect(() => {
+    getNextPage();
+  }, [isLoading]);
+
+  useEffect(() => {
     getFavorites();
   }, []);
 
@@ -123,27 +146,22 @@ const App = () => {
       </header>
       <main className={styles.mainContainer}>
         <ul className={styles.list}>
-          {error ? (
-            <div>failed to load</div>
-          ) : !data ? (
-            <div>loading...</div>
-          ) : (
-            data.map((song, index) => {
-              const record = find(favorites, (fav) => {
-                return fav.songId === song.id;
-              });
+          {data.map((song, index) => {
+            const record = find(favorites, (fav) => {
+              return fav.songId === song.id;
+            });
 
-              return (
-                <Song
-                  key={song.id}
-                  song={song}
-                  favoriteId={record ? record.id : null}
-                  isDark={index % 2}
-                  toggleFavorite={handleToggleFavorite}
-                />
-              );
-            })
-          )}
+            return (
+              <Song
+                key={song.id}
+                song={song}
+                favoriteId={record ? record.id : null}
+                isDark={index % 2}
+                toggleFavorite={handleToggleFavorite}
+              />
+            );
+          })}
+          {hasMore ? <div className={styles.loading}>LOADING...</div> : <div></div>}
         </ul>
       </main>
     </div>
