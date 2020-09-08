@@ -5,6 +5,8 @@ import Playlist from './components/Playlist';
 import Filter from './components/Filter';
 import axios from 'axios';
 import getFavorites from './apis/getFavorites';
+import toggleFavorites from './apis/toggleFavorites';
+import listenToScroll from './helpers/listenToScroll';
 
 const pageSize = 20;
 
@@ -16,14 +18,6 @@ const App = () => {
   const [start, setStart] = useState(0);
   const [search, setSearch] = useState('');
   const [filterMap, setFilterMap] = useState([]);
-
-  const listenToScroll = () => {
-    const winScroll = document.documentElement.scrollTop;
-    const height =
-      document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const position = Math.round((winScroll / height) * 100);
-    if (position > 90) setIsLoading(true);
-  };
 
   useEffect(() => {
     // GetNextPage
@@ -66,57 +60,8 @@ const App = () => {
     setFilterMap(filterMap);
   };
 
-  const handleToggleFavorite = (songId, favoriteId) => {
-    const url = `${process.env.REACT_APP_API_URL}/favorites`;
-    if (!favoriteId) {
-      // Handle optimistic UI - Append
-      const newFavorites = favorites.concat({ id: 'tempId', songId });
-      setFavorites(newFavorites);
-      // Call real end-point
-      axios
-        .post(url, { songId })
-        .then((response) => {
-          getFavorites()
-            .then((response) => {
-              setFavorites(response.data);
-            })
-            .catch((error) => {
-              // handle error
-            });
-        })
-        .catch((error) => {
-          // handle error
-        })
-        .then(() => {
-          // always executed
-        });
-    } else {
-      // Handle optimistic UI - Remove
-      const newFavorites = favorites.filter((fav) => fav.id !== favoriteId);
-      setFavorites(newFavorites);
-      // Call real end-point
-      axios
-        .delete(url + '/' + favoriteId)
-        .then((response) => {
-          getFavorites()
-            .then((response) => {
-              setFavorites(response.data);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        .then(() => {
-          // always executed
-        });
-    }
-  };
-
   useEffect(() => {
-    window.addEventListener('scroll', listenToScroll);
+    window.addEventListener('scroll', () => listenToScroll(setIsLoading));
     return () => {
       window.removeEventListener('scroll', () => {});
     };
@@ -152,7 +97,9 @@ const App = () => {
           <Playlist
             data={data}
             favorites={favorites}
-            onToggleFavorite={handleToggleFavorite}
+            onToggleFavorite={(songId, favoriteId) =>
+              toggleFavorites(songId, favoriteId, favorites, setFavorites)
+            }
             hasMore={hasMore}
           />
         </div>
