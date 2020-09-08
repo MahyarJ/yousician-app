@@ -14,7 +14,9 @@ const Song = ({ song, favoriteId, isDark, toggleFavorite }) => {
         <h6 className={styles.songTitle}>{title}</h6>
         <p className={styles.songArtist}>{artist}</p>
       </div>
-      <LevelIndicator value={level} />
+      <div className={styles.levelContainer}>
+        <LevelIndicator value={level} />
+      </div>
       <div
         className={favoriteId ? styles.favoriteMarked : styles.favoriteDefault}
         onClick={() => toggleFavorite(id, favoriteId)}

@@ -125,14 +125,16 @@ const App = () => {
           />
         </div>
       </header>
-      <main className={styles.mainContainer}>
-        <Filter />
-        <Playlist
-          data={data}
-          favorites={favorites}
-          onToggleFavorite={handleToggleFavorite}
-          hasMore={hasMore}
-        />
+      <main className={styles.main}>
+        <div className={styles.mainContainer}>
+          <Filter />
+          <Playlist
+            data={data}
+            favorites={favorites}
+            onToggleFavorite={handleToggleFavorite}
+            hasMore={hasMore}
+          />
+        </div>
       </main>
     </div>
   );

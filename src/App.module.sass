@@ -20,7 +20,16 @@
   @media (max-width: 1024px)
     width: 90%
 
-.mainContainer
+.main
   display: flex
   flex-flow: row wrap
   justify-content: center
+
+.mainContainer
+  display: flex
+  flex-flow: column wrap
+  width: 800px
+  justify-content: center
+
+  @media (max-width: 1024px)
+    width: 100%
