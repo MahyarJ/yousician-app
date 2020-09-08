@@ -1,6 +1,8 @@
+@import '../styles/palette.sass'
+
 @mixin separator
   position: absolute
-  background: #000000
+  background: $black
   width: 3px
   height: 13px
   top: 0
@@ -12,7 +14,7 @@
   height: 25px
   width: 25px
   margin: 10px
-  background: #000000
+  background: $black
   border-radius: 50%
 
 .levelGraph
@@ -21,15 +23,15 @@
 
 .lowLevel
   svg > circle
-    color: #6fc13e
+    color: $green
 
 .midLevel
   svg > circle
-    color: #ff8e00
+    color: $orange
 
 .highLevel
   svg > circle
-    color: #dc001c
+    color: $red
 
 .label
   position: absolute
@@ -56,10 +58,10 @@
   height: 25px !important
   width: 25px !important
   svg > circle
-    color: #383635
+    color: $midGrey
 
 .selectedLevel
-  background-color: #ffffff
+  background-color: $white
 
 .selectedLabel
-  color: #000000
+  color: $black
