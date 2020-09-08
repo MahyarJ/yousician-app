@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './App.module.sass';
 import Searchbar from './components/Searchbar';
 import Playlist from './components/Playlist';
+import Filter from './components/Filter';
 import axios from 'axios';
 import getFavorites from './apis/getFavorites';
 
@@ -125,6 +126,7 @@ const App = () => {
         </div>
       </header>
       <main className={styles.mainContainer}>
+        <Filter />
         <Playlist
           data={data}
           favorites={favorites}
