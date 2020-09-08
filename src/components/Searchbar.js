@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import styles from './Searchbar.module.sass';
 
 const Searchbar = ({ placeholder, onSearch }) => {
-  const [value, setvalue] = useState('');
+  const [value, setValue] = useState('');
   const handleChange = (event) => {
-    setvalue(event.target.value);
+    setValue(event.target.value);
   };
   const handleKeydown = (event) => {
     if (event.keyCode === 13) onSearch(value);

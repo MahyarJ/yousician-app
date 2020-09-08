@@ -4,10 +4,10 @@ import LevelIndicator from './LevelIndicator';
 import { uniq } from 'lodash';
 
 const Filter = ({ filterMap, onChange }) => {
-  const [isOpen, setisOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleFilter = () => {
-    setisOpen(!isOpen);
+    setIsOpen(!isOpen);
   };
 
   const handleSelectLevel = (level) => {
