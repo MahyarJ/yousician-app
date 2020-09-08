@@ -3,20 +3,19 @@ import styles from './Filter.module.sass';
 import LevelIndicator from './LevelIndicator';
 import { uniq } from 'lodash';
 
-const filterMap = new Array(15).fill(0);
-
-const Filter = (props) => {
+const Filter = ({ filterMap, onChange }) => {
   const [isOpen, setisOpen] = useState(false);
-  const [selected, setselected] = useState([]);
 
   const toggleFilter = () => {
     setisOpen(!isOpen);
   };
 
   const handleSelectLevel = (level) => {
-    console.log(selected);
-    if (selected.includes(level)) setselected(selected.filter((s) => s !== level));
-    else setselected(uniq(selected.concat(level)));
+    if (filterMap.includes(level)) {
+      onChange(filterMap.filter((s) => s !== level));
+    } else {
+      onChange(uniq(filterMap.concat(level)));
+    }
   };
 
   return (
@@ -27,12 +26,12 @@ const Filter = (props) => {
       </div>
       {isOpen && (
         <div className={styles.levelPanel}>
-          {filterMap.map((_, index) => {
+          {new Array(15).fill(0).map((_, index) => {
             return (
               <LevelIndicator
                 key={index + 1}
                 value={index + 1}
-                isSelected={selected.includes(index + 1)}
+                isSelected={filterMap.includes(index + 1)}
                 onSelect={handleSelectLevel}
               />
             );

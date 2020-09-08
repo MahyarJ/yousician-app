@@ -15,6 +15,7 @@ const App = () => {
   const [favorites, setfavorites] = useState([]);
   const [start, setstart] = useState(0);
   const [search, setsearch] = useState('');
+  const [filterMap, setfilterMap] = useState([]);
 
   const listenToScroll = () => {
     const winScroll = document.documentElement.scrollTop;
@@ -27,10 +28,14 @@ const App = () => {
   useEffect(() => {
     // GetNextPage
     if (!isLoading || !hasMore) return;
-    const songsUrl = `${process.env.REACT_APP_API_URL}/songs?_start=${start}&_limit=${pageSize}&search_like=${search}`;
-    console.log(songsUrl);
+    const url = `${process.env.REACT_APP_API_URL}/songs?`;
+    const params = `_start=${start}&_limit=${pageSize}&search_like=${search}`;
+    const filter = filterMap.reduce((total, level) => {
+      return `${total}&level=${level}`;
+    }, '');
+
     axios
-      .get(songsUrl)
+      .get(url + params + filter)
       .then((response) => {
         setisLoading(false);
         setstart((start) => start + pageSize);
@@ -43,7 +48,7 @@ const App = () => {
         console.log(error);
         setisLoading(false);
       });
-  }, [isLoading, search, hasMore, start]);
+  }, [isLoading, search, hasMore, start, filterMap]);
 
   const handleSearchSongs = (value) => {
     setstart(0);
@@ -51,6 +56,14 @@ const App = () => {
     setisLoading(true);
     sethasMore(true);
     setsearch(encodeURI(value));
+  };
+
+  const handleFilterChange = (filterMap) => {
+    setstart(0);
+    setdata([]);
+    setisLoading(true);
+    sethasMore(true);
+    setfilterMap(filterMap);
   };
 
   const handleToggleFavorite = (songId, favoriteId) => {
@@ -127,7 +140,7 @@ const App = () => {
       </header>
       <main className={styles.main}>
         <div className={styles.mainContainer}>
-          <Filter />
+          <Filter filterMap={filterMap} onChange={handleFilterChange} />
           <Playlist
             data={data}
             favorites={favorites}
