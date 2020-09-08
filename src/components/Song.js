@@ -1,4 +1,5 @@
 import React from 'react';
+import { Img } from 'react-image';
 import styles from './Song.module.sass';
 import LevelIndicator from './LevelIndicator';
 
@@ -10,7 +11,7 @@ const Song = ({ song, favoriteId, isDark, toggleFavorite }) => {
       style={{ background: isDark ? '#000000' : '#101010' }}
       data-testid="songContainer"
     >
-      <img src={images} alt="cover" />
+      <Img src={images} unloader={<div className={styles.coverFallback} />} />
       <div className={styles.titleBlock}>
         <h6 className={styles.songTitle}>{title}</h6>
         <p className={styles.songArtist}>{artist}</p>
