@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styles from './App.module.sass';
 import Searchbar from './components/Searchbar';
-import Song from './components/Song';
+import Playlist from './components/Playlist';
 import axios from 'axios';
-import { find } from 'lodash';
+import getFavorites from './apis/getFavorites';
 
 const pageSize = 20;
 
@@ -20,21 +20,6 @@ const App = () => {
       document.documentElement.scrollHeight - document.documentElement.clientHeight;
     const position = Math.round((winScroll / height) * 100);
     if (position > 90) setisLoading(true);
-  };
-
-  const getFavorites = () => {
-    const favoritesUrl = 'http://localhost:3004/favorites';
-    axios
-      .get(favoritesUrl)
-      .then((response) => {
-        setfavorites(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .then(() => {
-        // always executed
-      });
   };
 
   const getNextPage = () => {
@@ -86,14 +71,16 @@ const App = () => {
       axios
         .post(url, { songId })
         .then((response) => {
-          getFavorites();
-          // setdata(response.data);
-          console.log(response);
+          getFavorites()
+            .then((response) => {
+              setfavorites(response.data);
+            })
+            .catch((error) => {
+              // handle error
+            });
         })
         .catch((error) => {
           // handle error
-          // seterror(error);
-          console.log(error);
         })
         .then(() => {
           // always executed
@@ -102,9 +89,13 @@ const App = () => {
       axios
         .delete(url + '/' + favoriteId)
         .then((response) => {
-          // setdata(response.data);
-          getFavorites();
-          console.log(response);
+          getFavorites()
+            .then((response) => {
+              setfavorites(response.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         })
         .catch((error) => {
           console.log(error);
@@ -127,7 +118,13 @@ const App = () => {
   }, [isLoading]);
 
   useEffect(() => {
-    getFavorites();
+    getFavorites()
+      .then((response) => {
+        setfavorites(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   return (
@@ -145,24 +142,12 @@ const App = () => {
         </div>
       </header>
       <main className={styles.mainContainer}>
-        <ul className={styles.list}>
-          {data.map((song, index) => {
-            const record = find(favorites, (fav) => {
-              return fav.songId === song.id;
-            });
-
-            return (
-              <Song
-                key={song.id}
-                song={song}
-                favoriteId={record ? record.id : null}
-                isDark={index % 2}
-                toggleFavorite={handleToggleFavorite}
-              />
-            );
-          })}
-          {hasMore ? <div className={styles.loading}>LOADING...</div> : <div></div>}
-        </ul>
+        <Playlist
+          data={data}
+          favorites={favorites}
+          onToggleFavorite={handleToggleFavorite}
+          hasMore={hasMore}
+        />
       </main>
     </div>
   );
