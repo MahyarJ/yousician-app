@@ -18,7 +18,7 @@ const Filter = (props) => {
       {isOpen && (
         <div className={styles.levelPanel}>
           {filterMap.map((_, index) => {
-            return <LevelIndicator value={index + 1} />;
+            return <LevelIndicator key={index + 1} value={index + 1} />;
           })}
         </div>
       )}

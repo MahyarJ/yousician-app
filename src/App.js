@@ -27,7 +27,7 @@ const App = () => {
   useEffect(() => {
     // GetNextPage
     if (!isLoading || !hasMore) return;
-    const songsUrl = `http://localhost:3004/songs?_start=${start}&_limit=${pageSize}&search_like=${search}`;
+    const songsUrl = `${process.env.REACT_APP_API_URL}/songs?_start=${start}&_limit=${pageSize}&search_like=${search}`;
     console.log(songsUrl);
     axios
       .get(songsUrl)
@@ -54,7 +54,7 @@ const App = () => {
   };
 
   const handleToggleFavorite = (songId, favoriteId) => {
-    const url = 'http://localhost:3004/favorites';
+    const url = `${process.env.REACT_APP_API_URL}/favorites`;
     if (!favoriteId) {
       axios
         .post(url, { songId })
