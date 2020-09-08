@@ -7,7 +7,8 @@ const Song = ({ song, favoriteId, isDark, toggleFavorite }) => {
   return (
     <li
       className={styles.container}
-      style={{ background: isDark ? '#101010' : '#000000' }}
+      style={{ background: isDark ? '#000000' : '#101010' }}
+      data-testid="songContainer"
     >
       <img src={images} alt="cover" />
       <div className={styles.titleBlock}>
