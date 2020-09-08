@@ -6,7 +6,7 @@ import Filter from './components/Filter';
 import axios from 'axios';
 import getFavorites from './apis/getFavorites';
 import toggleFavorites from './apis/toggleFavorites';
-import listenToScroll from './helpers/listenToScroll';
+import useScroll from './hooks/useScroll';
 
 const pageSize = 20;
 
@@ -60,12 +60,7 @@ const App = () => {
     setFilterMap(filterMap);
   };
 
-  useEffect(() => {
-    window.addEventListener('scroll', () => listenToScroll(setIsLoading));
-    return () => {
-      window.removeEventListener('scroll', () => {});
-    };
-  }, []);
+  useScroll(setIsLoading);
 
   useEffect(() => {
     getFavorites()
