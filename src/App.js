@@ -43,7 +43,7 @@ const App = () => {
         console.log(error);
         setisLoading(false);
       });
-  }, [isLoading, search]);
+  }, [isLoading, search, hasMore, start]);
 
   const handleSearchSongs = (value) => {
     setstart(0);
