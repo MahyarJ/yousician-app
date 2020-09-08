@@ -13,6 +13,7 @@ const App = () => {
   const [isLoading, setisLoading] = useState(true);
   const [favorites, setfavorites] = useState([]);
   const [start, setstart] = useState(0);
+  const [search, setsearch] = useState('');
 
   const listenToScroll = () => {
     const winScroll = document.documentElement.scrollTop;
@@ -22,47 +23,33 @@ const App = () => {
     if (position > 90) setisLoading(true);
   };
 
-  const getNextPage = () => {
+  useEffect(() => {
+    // GetNextPage
     if (!isLoading || !hasMore) return;
-    const songsUrl = `http://localhost:3004/songs?_start=${start}&_limit=${pageSize}`;
+    const songsUrl = `http://localhost:3004/songs?_start=${start}&_limit=${pageSize}&search_like=${search}`;
     console.log(songsUrl);
     axios
       .get(songsUrl)
       .then((response) => {
         setisLoading(false);
-        setstart(start + pageSize);
+        setstart((start) => start + pageSize);
         if (response.data.length < pageSize) {
-          console.log('no more');
           sethasMore(false);
         }
-        setdata(data.concat(response.data));
+        setdata((data) => data.concat(response.data));
       })
       .catch((error) => {
         console.log(error);
         setisLoading(false);
       });
-  };
+  }, [isLoading, search]);
 
   const handleSearchSongs = (value) => {
-    setdata(null);
-    const url = 'http://localhost:3004/songs';
-    const params = {
-      _start: 0,
-      _end: 50,
-      search_like: encodeURI(value),
-    };
-
-    axios
-      .get(url, { params })
-      .then((response) => {
-        setdata(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .then(() => {
-        // always executed
-      });
+    setstart(0);
+    setdata([]);
+    setisLoading(true);
+    sethasMore(true);
+    setsearch(encodeURI(value));
   };
 
   const handleToggleFavorite = (songId, favoriteId) => {
@@ -112,10 +99,6 @@ const App = () => {
       window.removeEventListener('scroll', () => {});
     };
   }, []);
-
-  useEffect(() => {
-    getNextPage();
-  }, [isLoading]);
 
   useEffect(() => {
     getFavorites()
