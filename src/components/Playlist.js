@@ -20,7 +20,10 @@ const Playlist = ({ data, favorites, onToggleFavorite, hasMore }) => {
           />
         );
       })}
-      {hasMore ? <div className={styles.loading}>LOADING...</div> : <div></div>}
+
+      <div className={styles.loading}>
+        {hasMore ? 'LOADING...' : data.length ? '' : 'NO RELATED SONG AVAILABLE'}
+      </div>
     </ul>
   );
 };
