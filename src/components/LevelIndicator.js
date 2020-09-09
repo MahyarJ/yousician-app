@@ -30,7 +30,7 @@ const LevelIndicator = ({ value, isSelected, onSelect }) => {
   return (
     <div className={levelStyle} onClick={handleSelect}>
       {!isSelected && (
-        <>
+        <div data-testid="colorIndicator">
           <CircularProgress
             className={styles.underlyingGraph}
             variant="static"
@@ -44,7 +44,7 @@ const LevelIndicator = ({ value, isSelected, onSelect }) => {
           <div className={styles.separator0} />
           <div className={styles.separator1} />
           <div className={styles.separator2} />
-        </>
+        </div>
       )}
       <p className={labelStyle}>{value}</p>
     </div>
